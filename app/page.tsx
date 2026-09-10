@@ -38,8 +38,10 @@ const useTypewriter = (texts: string[], speed = 75, pause = 2000) => {
     if (!deleting && display === current) {
       t = setTimeout(() => setDeleting(true), pause);
     } else if (deleting && display === "") {
-      setDeleting(false);
-      setIdx((i) => (i + 1) % texts.length);
+      t = setTimeout(() => {
+        setDeleting(false);
+        setIdx((i) => (i + 1) % texts.length);
+      }, 0);
     } else {
       t = setTimeout(() => {
         setDisplay(
@@ -75,14 +77,14 @@ const Reveal = ({ children, delay = 0, className = "" }: RevealProps) => {
 
 // ── Componente: chip de tecnología ────────────────────────────────────────
 const Chip = ({ label }: { label: string }) => (
-  <span className="font-mono text-[10px] tracking-wide text-stone-400 border border-stone-300 px-2.5 py-0.5 rounded">
+  <span className="font-mono text-[11px] tracking-wide text-stone-400 border border-stone-300 px-2.5 py-0.5 rounded">
     {label}
   </span>
 );
 
 // ── Componente: bullet de lista ───────────────────────────────────────────
 const Bullet = ({ text }: { text: string }) => (
-  <div className="flex gap-3 text-[15px] text-stone-500 leading-relaxed">
+  <div className="flex gap-3 text-[16px] text-stone-600 leading-relaxed">
     <span className="text-stone-300 shrink-0 mt-0.5">—</span>
     <span>{text}</span>
   </div>
@@ -111,16 +113,16 @@ const ExpCard = ({
     <div>
       <div className="flex items-center gap-3 mb-3">
         <div className="relative w-8 h-8 bg-white rounded-lg overflow-hidden border border-stone-200 shrink-0">
-          <Image src={logo} alt={company} fill className="object-contain p-1" />
+          <Image src={logo} alt={company} fill sizes="32px" className="object-contain p-1" />
         </div>
         <span className="font-serif text-xl font-normal text-stone-800">{company}</span>
       </div>
-      <p className="font-mono text-[15px] tracking-widest text-stone-400 mb-1">{period}</p>
-      <p className="text-[12px] text-stone-400">{role}</p>
+      <p className="font-mono text-[16px] tracking-widest text-stone-400 mb-1">{period}</p>
+      <p className="text-[14px] text-stone-500">{role}</p>
     </div>
     {/* Columna derecha */}
     <div>
-      <p className="text-[15px] text-stone-500 leading-relaxed mb-5 font-light">{description}</p>
+      <p className="text-[16px] text-stone-600 leading-relaxed mb-5 font-light">{description}</p>
       <div className="flex flex-col gap-3 mb-5">
         {bullets.map((b, i) => <Bullet key={i} text={b} />)}
       </div>
@@ -167,7 +169,7 @@ const EasterEgg = ({ onClose }: { onClose: () => void }) => {
           <button onClick={onClose} className="w-3 h-3 rounded-full cursor-pointer" style={{ background: "#c8502a" }} />
           <div className="w-3 h-3 rounded-full" style={{ background: "#44403c" }} />
           <div className="w-3 h-3 rounded-full" style={{ background: "#44403c" }} />
-          <span className="ml-3 text-[10px] tracking-widest uppercase" style={{ color: "#57534e" }}>es — terminal</span>
+          <span className="ml-3 text-[11px] tracking-widest uppercase" style={{ color: "#57534e" }}>es — terminal</span>
         </div>
         <div className="p-6 space-y-2 min-h-[220px]">
           {TERMINAL_LINES.map(({ prompt, response }, i) => (
@@ -181,7 +183,7 @@ const EasterEgg = ({ onClose }: { onClose: () => void }) => {
           )}
         </div>
         <div className="px-6 pb-4">
-          <p className="text-[9px] tracking-widest uppercase" style={{ color: "#3c3835" }}>click fuera o ESC para cerrar</p>
+          <p className="text-[10px] tracking-widest uppercase" style={{ color: "#3c3835" }}>click fuera o ESC para cerrar</p>
         </div>
       </div>
     </div>
@@ -201,7 +203,6 @@ export default function Home() {
   const [darkMode, setDarkMode] = useState(false);
   const [showEasterEgg, setShowEasterEgg] = useState(false);
   const [showContact, setShowContact] = useState(false);
-  const [showProject, setShowProject] = useState(false);
   const [showProject1, setShowProject1] = useState(false);
   const [showProject2, setShowProject2] = useState(false);
   const [showProject3, setShowProject3] = useState(false);
@@ -216,9 +217,9 @@ export default function Home() {
       new Date().toLocaleTimeString("es-CL", {
         hour: "2-digit", minute: "2-digit", second: "2-digit",
       });
-    setTime(fmt());
+    const t = setTimeout(() => setTime(fmt()), 0);
     const i = setInterval(() => setTime(fmt()), 1000);
-    return () => clearInterval(i);
+    return () => { clearTimeout(t); clearInterval(i); };
   }, []);
 
   const typewriterText = useTypewriter(ROLES);
@@ -240,11 +241,10 @@ export default function Home() {
     <>
       {/* ── CSS mínimo: fuentes, keyframes, scrollbar ── */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Geist+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap');
         html { scroll-behavior: smooth; }
-        body { font-family: 'Outfit', sans-serif; }
-        .font-serif  { font-family: 'Cormorant Garamond', Georgia, serif; }
-        .font-mono   { font-family: 'Geist Mono', monospace; }
+        body { font-family: var(--font-sans), sans-serif; }
+        .font-serif  { font-family: var(--font-serif), Georgia, serif; }
+        .font-mono   { font-family: var(--font-mono), monospace; }
         ::selection  { background: #c8502a; color: #fff; }
         ::-webkit-scrollbar       { width: 4px; }
         ::-webkit-scrollbar-track { background: #f2f0eb; }
@@ -299,7 +299,7 @@ export default function Home() {
                 <button
                   key={s}
                   onClick={() => scrollTo(s)}
-                  className={`font-mono text-[10px] tracking-widest uppercase px-3 py-1.5 rounded-full border transition-all duration-200 cursor-pointer
+                  className={`font-mono text-[11px] tracking-widest uppercase px-3 py-1.5 rounded-full border transition-all duration-200 cursor-pointer
                     ${activeSection === s
                       ? "bg-stone-800 text-[#f2f0eb] border-stone-800"
                       : "border-stone-200 text-stone-500 hover:border-stone-400 hover:text-stone-800"
@@ -313,10 +313,10 @@ export default function Home() {
             <div className="hidden md:flex items-center gap-4">
               <button
                 onClick={handleDarkToggle}
-                className="font-mono text-[15px] text-stone-400 hover:text-stone-700 transition-colors cursor-pointer bg-transparent border-none p-0 leading-none"
+                className="font-mono text-[16px] text-stone-400 hover:text-stone-700 transition-colors cursor-pointer bg-transparent border-none p-0 leading-none"
                 title={darkMode ? "Modo claro" : "Modo oscuro"}
               >{darkMode ? "☀" : "◑"}</button>
-              <span className="font-mono text-[11px] text-stone-400">{time}</span>
+              <span className="font-mono text-[12px] text-stone-400">{time}</span>
             </div>
           </div>
         </nav>
@@ -328,7 +328,7 @@ export default function Home() {
             {/* Texto */}
             <div>
               <div className="animate-fade-up-1">
-                <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#c8502a] mb-4">
+                <p className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#c8502a] mb-4">
                   <span className="cursor-blink">{typewriterText || "\u00A0"}</span>
                   <span className="opacity-60"> · Santiago, Chile</span>
                 </p>
@@ -341,7 +341,7 @@ export default function Home() {
               <div className="animate-fade-up-2 h-px bg-stone-200 mb-8" />
 
               <div className="animate-fade-up-3 max-w-2xl">
-                <p className="text-[17px] text-stone-500 leading-relaxed font-light mb-7 text-justify">
+                <p className="text-[18px] text-stone-600 leading-relaxed font-light mb-7 text-justify">
                   28 años. Perfil construido en dos etapas —{" "}
                   <strong className="text-stone-700 font-medium">Ingenieria en Automatización y Robótica</strong>, luego{" "}
                   <strong className="text-stone-700 font-medium">Ingeniería en Computación e Informática</strong>.
@@ -362,11 +362,12 @@ export default function Home() {
                   src="/img_6762.jpeg"
                   alt="Eduardo Schettino"
                   fill
+                  sizes="(min-width: 768px) 340px, 100vw"
                   className="object-cover grayscale-[15%] hover:scale-[1.04] transition-transform duration-700"
                   priority
                 />
                 <div className="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-stone-900/60 to-transparent flex items-end p-4">
-                  <span className="font-mono text-[9px] tracking-[0.2em] text-stone-300/70 uppercase">
+                  <span className="font-mono text-[10px] tracking-[0.2em] text-stone-300/70 uppercase">
                     Disponible · {new Date().getFullYear()}
                   </span>
                 </div>
@@ -380,7 +381,7 @@ export default function Home() {
           <div className="max-w-7xl mx-auto">
             <Reveal>
               <div className="flex items-baseline gap-4 mb-12">
-                <span className="font-mono text-[11px] text-stone-400">02</span>
+                <span className="font-mono text-[12px] text-stone-400">02</span>
                 <h2 className="font-serif font-light text-[clamp(2.2rem,5vw,4rem)] leading-none tracking-tight text-stone-800">
                   Experiencia <span className="italic text-stone-500">profesional</span>
                 </h2>
@@ -434,7 +435,7 @@ export default function Home() {
             <div>
               <Reveal>
                 <div className="flex items-baseline gap-4 mb-10">
-                  <span className="font-mono text-[11px] text-stone-400">03</span>
+                  <span className="font-mono text-[12px] text-stone-400">03</span>
                   <h2 className="font-serif font-light text-[clamp(2.2rem,5vw,4rem)] leading-none tracking-tight text-stone-800">
                     Formación <span className="italic text-stone-500">académica</span>
                   </h2>
@@ -454,9 +455,9 @@ export default function Home() {
                         <h3 className={`font-serif text-xl font-normal ${dim ? "text-stone-500" : "text-stone-800"}`}>
                           {title}
                         </h3>
-                        <span className="font-mono text-[11px] text-stone-400 tracking-widest">{period}</span>
+                        <span className="font-mono text-[12px] text-stone-400 tracking-widest">{period}</span>
                       </div>
-                      <p className="text-[15px] text-stone-400">Universidad Andrés Bello</p>
+                      <p className="text-[16px] text-stone-500">Universidad Andrés Bello</p>
                     </div>
                   ))}
                 </div>
@@ -470,9 +471,9 @@ export default function Home() {
                       { lang: "Español", level: "Nativo", pct: "100%", dim: true },
                     ].map(({ lang, level, pct, dim }) => (
                       <div key={lang}>
-                        <div className="flex justify-between text-[15px] mb-2.5">
+                        <div className="flex justify-between text-[16px] mb-2.5">
                           <span className="text-stone-700 font-normal">{lang}</span>
-                          <span className="font-mono text-[11px] text-stone-400">{level}</span>
+                          <span className="font-mono text-[12px] text-stone-400">{level}</span>
                         </div>
                         <div className="h-px bg-stone-200 relative overflow-hidden rounded">
                           <div
@@ -491,7 +492,7 @@ export default function Home() {
             <div>
               <Reveal>
                 <div className="flex items-baseline gap-4 mb-10">
-                  <span className="font-mono text-[11px] text-stone-400 invisible">–</span>
+                  <span className="font-mono text-[12px] text-stone-400 invisible">–</span>
                   <h2 className="font-serif font-light text-[clamp(2.2rem,5vw,4rem)] leading-none tracking-tight text-stone-800">
                     Stack & <span className="italic text-stone-500">cert.</span>
                   </h2>
@@ -505,16 +506,16 @@ export default function Home() {
                   before:border-t-2 before:border-l-2 before:border-[#c8502a]">
                   <div className="flex items-center gap-4 mb-5">
                     <div className="relative w-20 h-20 shrink-0">
-                      <Image src="/Aveva_badge.jpg" alt="AVEVA" fill className="object-contain" />
+                      <Image src="/Aveva_badge.jpg" alt="AVEVA" fill sizes="80px" className="object-contain" />
                     </div>
                     <div>
                       <p className="font-serif text-lg font-normal text-stone-800">System Platform Professional</p>
-                      <p className="font-mono text-[9px] tracking-widest text-[#c8502a] mt-1 uppercase">AVEVA Certified</p>
+                      <p className="font-mono text-[10px] tracking-widest text-[#c8502a] mt-1 uppercase">AVEVA Certified</p>
                     </div>
                   </div>
                   <div className="flex gap-2">
                     {["AVEVA™ Operations Management Interface", "AVEVA™ Application Server"].map((item) => (
-                      <div key={item} className="flex-1 flex justify-between items-center bg-[#f2f0eb] px-3 py-2 font-mono text-[11px] text-stone-400">
+                      <div key={item} className="flex-1 flex justify-between items-center bg-[#f2f0eb] px-3 py-2 font-mono text-[12px] text-stone-400">
                         <span>{item}</span>
                         <span className="text-[#c8502a]">✓</span>
                       </div>
@@ -541,10 +542,10 @@ export default function Home() {
                     },
                   ].map(({ label, lines }) => (
                     <div key={label} className="py-2">
-                      <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-stone-400 mb-2.5">{label}</p>
+                      <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-stone-400 mb-2.5">{label}</p>
                       <div className="space-y-1">
                         {lines.map((line) => (
-                          <p key={line} className="text-[15px] text-stone-500 leading-relaxed">
+                          <p key={line} className="text-[16px] text-stone-600 leading-relaxed">
                             - {line}
                           </p>
                         ))}
@@ -563,7 +564,7 @@ export default function Home() {
           <div className="max-w-7xl mx-auto">
             <Reveal>
               <div className="flex items-baseline gap-4 mb-12">
-                <span className="font-mono text-[11px] text-stone-400">04</span>
+                <span className="font-mono text-[12px] text-stone-400">04</span>
                 <h2 className="font-serif font-light text-[clamp(2.2rem,5vw,4rem)] leading-none tracking-tight text-stone-800">
                   Casos de <span className="italic text-stone-500">estudio</span>
                 </h2>
@@ -577,8 +578,8 @@ export default function Home() {
                 {/* Proyecto activo */}
                 <div className="bg-[#eceae4] p-10 min-h-[340px] flex flex-col">
                   <div className="flex justify-between items-start mb-7">
-                    <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-stone-400">Automatización Industrial</span>
-                    <span className="font-mono text-[9px] text-stone-400">2025</span>
+                    <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-stone-400">Automatización Industrial</span>
+                    <span className="font-mono text-[10px] text-stone-400">2025</span>
                   </div>
                   {!showProject1 ? (
                     <div className="flex flex-col flex-1">
@@ -586,7 +587,7 @@ export default function Home() {
                       Integración de Molino y Despiedrador<br />
                         <span className="italic text-stone-500">Planta de Café de Nestlé - Graneros</span>
                       </h3>
-                      <p className="text-[15px] text-stone-500 leading-relaxed font-light mb-6">
+                      <p className="text-[16px] text-stone-600 leading-relaxed font-light mb-6">
                         Integración de sistemas de molienda y despiedrado bajo plataforma ArchestrA e InTouch para optimización operativa.
                       </p>
                       <div className="flex gap-2 mb-7">
@@ -594,7 +595,7 @@ export default function Home() {
                       </div>
                       <button
                         onClick={() => setShowProject1(true)}
-                        className="w-fit font-mono text-[10px] tracking-widest uppercase border border-stone-300 text-stone-500 px-4 py-2 rounded-sm hover:border-stone-600 hover:text-stone-700 transition-all cursor-pointer"
+                        className="w-fit font-mono text-[11px] tracking-widest uppercase border border-stone-300 text-stone-500 px-4 py-2 rounded-sm hover:border-stone-600 hover:text-stone-700 transition-all cursor-pointer"
                       >
                         Ver telemetría →
                       </button>
@@ -609,7 +610,7 @@ export default function Home() {
                       </div>
                       <button
                         onClick={() => setShowProject1(false)}
-                        className="mt-6 w-fit font-mono text-[10px] tracking-widest uppercase border border-stone-300 text-stone-500 px-4 py-2 rounded-sm hover:border-stone-600 hover:text-stone-700 transition-all cursor-pointer"
+                        className="mt-6 w-fit font-mono text-[11px] tracking-widest uppercase border border-stone-300 text-stone-500 px-4 py-2 rounded-sm hover:border-stone-600 hover:text-stone-700 transition-all cursor-pointer"
                       >
                         ← Volver
                       </button>
@@ -618,8 +619,8 @@ export default function Home() {
                 </div>
                 <div className="bg-[#eceae4] p-10 min-h-[340px] flex flex-col">
                   <div className="flex justify-between items-start mb-7">
-                    <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-stone-400">Infraestructura SCADA</span>
-                    <span className="font-mono text-[9px] text-stone-400">2025</span>
+                    <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-stone-400">Infraestructura SCADA</span>
+                    <span className="font-mono text-[10px] text-stone-400">2025</span>
                   </div>
                   {!showProject2 ? (
                     <div className="flex flex-col flex-1">
@@ -627,7 +628,7 @@ export default function Home() {
                         Migración Servidores SCADA <br />
                         <span className="italic text-stone-500">Planta Cereales y Café - Nestlé</span>
                       </h3>
-                      <p className="text-[15px] text-stone-500 leading-relaxed font-light mb-6">
+                      <p className="text-[16px] text-stone-600 leading-relaxed font-light mb-6">
                         Actualización integral de la plataforma de supervisión industrial a la versión AVEVA System Platform 2023 R2.
                       </p>
                       <div className="flex gap-2 mb-7">
@@ -635,7 +636,7 @@ export default function Home() {
                       </div>
                       <button
                         onClick={() => setShowProject2(true)}
-                        className="w-fit font-mono text-[10px] tracking-widest uppercase border border-stone-300 text-stone-500 px-4 py-2 rounded-sm hover:border-stone-600 hover:text-stone-700 transition-all cursor-pointer"
+                        className="w-fit font-mono text-[11px] tracking-widest uppercase border border-stone-300 text-stone-500 px-4 py-2 rounded-sm hover:border-stone-600 hover:text-stone-700 transition-all cursor-pointer"
                       >
                         Ver telemetría →
                       </button>
@@ -650,7 +651,7 @@ export default function Home() {
                       </div>
                       <button
                         onClick={() => setShowProject2(false)}
-                        className="mt-6 w-fit font-mono text-[10px] tracking-widest uppercase border border-stone-300 text-stone-500 px-4 py-2 rounded-sm hover:border-stone-600 hover:text-stone-700 transition-all cursor-pointer"
+                        className="mt-6 w-fit font-mono text-[11px] tracking-widest uppercase border border-stone-300 text-stone-500 px-4 py-2 rounded-sm hover:border-stone-600 hover:text-stone-700 transition-all cursor-pointer"
                       >
                         ← Volver
                       </button>
@@ -659,8 +660,8 @@ export default function Home() {
                 </div>
                 <div className="bg-[#eceae4] p-10 min-h-[340px] flex flex-col">
                   <div className="flex justify-between items-start mb-7">
-                    <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-stone-400">Control de Procesos</span>
-                    <span className="font-mono text-[9px] text-stone-400">2025</span>
+                    <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-stone-400">Control de Procesos</span>
+                    <span className="font-mono text-[10px] text-stone-400">2025</span>
                   </div>
                   {!showProject3 ? (
                     <div className="flex flex-col flex-1">
@@ -668,7 +669,7 @@ export default function Home() {
                         Tratamiento CHE<br />
                         <span className="italic text-stone-500">Planta Cereales | Área de Hidrólisis - Nestlé</span>
                       </h3>
-                      <p className="text-[15px] text-stone-500 leading-relaxed font-light mb-6">
+                      <p className="text-[16px] text-stone-600 leading-relaxed font-light mb-6">
                         Integración de instrumentación  y desarrollo de algoritmos para el cálculo de residencia de producto.
                       </p>
                       <div className="flex gap-2 mb-7">
@@ -676,7 +677,7 @@ export default function Home() {
                       </div>
                       <button
                         onClick={() => setShowProject3(true)}
-                        className="w-fit font-mono text-[10px] tracking-widest uppercase border border-stone-300 text-stone-500 px-4 py-2 rounded-sm hover:border-stone-600 hover:text-stone-700 transition-all cursor-pointer"
+                        className="w-fit font-mono text-[11px] tracking-widest uppercase border border-stone-300 text-stone-500 px-4 py-2 rounded-sm hover:border-stone-600 hover:text-stone-700 transition-all cursor-pointer"
                       >
                         Ver telemetría →
                       </button>
@@ -691,7 +692,7 @@ export default function Home() {
                       </div>
                       <button
                         onClick={() => setShowProject3(false)}
-                        className="mt-6 w-fit font-mono text-[10px] tracking-widest uppercase border border-stone-300 text-stone-500 px-4 py-2 rounded-sm hover:border-stone-600 hover:text-stone-700 transition-all cursor-pointer"
+                        className="mt-6 w-fit font-mono text-[11px] tracking-widest uppercase border border-stone-300 text-stone-500 px-4 py-2 rounded-sm hover:border-stone-600 hover:text-stone-700 transition-all cursor-pointer"
                       >
                         ← Volver
                       </button>
@@ -700,8 +701,8 @@ export default function Home() {
                 </div>
                 <div className="bg-[#eceae4] p-10 min-h-[340px] flex flex-col">
                   <div className="flex justify-between items-start mb-7">
-                    <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-stone-400">Optimización</span>
-                    <span className="font-mono text-[9px] text-stone-400">2025</span>
+                    <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-stone-400">Optimización</span>
+                    <span className="font-mono text-[10px] text-stone-400">2025</span>
                   </div>
                   {!showProject4 ? (
                     <div className="flex flex-col flex-1">
@@ -709,7 +710,7 @@ export default function Home() {
                         Tiempos Perdidos<br />
                         <span className="italic text-stone-500">Agrosuper Lo Miranda</span>
                       </h3>
-                      <p className="text-[15px] text-stone-500 leading-relaxed font-light mb-6">
+                      <p className="text-[16px] text-stone-600 leading-relaxed font-light mb-6">
                         Mejora del sistema de control de rutas y gestión de cambio de dieta para minimizar tiempos muertos en Línea 5.
                       </p>
                       <div className="flex gap-2 mb-7">
@@ -717,7 +718,7 @@ export default function Home() {
                       </div>
                       <button
                         onClick={() => setShowProject4(true)}
-                        className="w-fit font-mono text-[10px] tracking-widest uppercase border border-stone-300 text-stone-500 px-4 py-2 rounded-sm hover:border-stone-600 hover:text-stone-700 transition-all cursor-pointer"
+                        className="w-fit font-mono text-[11px] tracking-widest uppercase border border-stone-300 text-stone-500 px-4 py-2 rounded-sm hover:border-stone-600 hover:text-stone-700 transition-all cursor-pointer"
                       >
                         Ver telemetría →
                       </button>
@@ -732,7 +733,7 @@ export default function Home() {
                       </div>
                       <button
                         onClick={() => setShowProject4(false)}
-                        className="mt-6 w-fit font-mono text-[10px] tracking-widest uppercase border border-stone-300 text-stone-500 px-4 py-2 rounded-sm hover:border-stone-600 hover:text-stone-700 transition-all cursor-pointer"
+                        className="mt-6 w-fit font-mono text-[11px] tracking-widest uppercase border border-stone-300 text-stone-500 px-4 py-2 rounded-sm hover:border-stone-600 hover:text-stone-700 transition-all cursor-pointer"
                       >
                         ← Volver
                       </button>
@@ -741,8 +742,8 @@ export default function Home() {
                 </div>
                 <div className="bg-[#eceae4] p-10 min-h-[340px] flex flex-col">
                   <div className="flex justify-between items-start mb-7">
-                    <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-stone-400">Sistemas Batch</span>
-                    <span className="font-mono text-[9px] text-stone-400">2025</span>
+                    <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-stone-400">Sistemas Batch</span>
+                    <span className="font-mono text-[10px] text-stone-400">2025</span>
                   </div>
                   {!showProject5 ? (
                     <div className="flex flex-col flex-1">
@@ -750,7 +751,7 @@ export default function Home() {
                         HMI MasterChef<br />
                         <span className="italic text-stone-500">Purina Teno</span>
                       </h3>
-                      <p className="text-[15px] text-stone-500 leading-relaxed font-light mb-6">
+                      <p className="text-[16px] text-stone-600 leading-relaxed font-light mb-6">
                         Desarrollo de interfaz avanzada para el control de dosificación y supervisión de unidades de proceso por lotes.
                       </p>
                       <div className="flex gap-2 mb-7">
@@ -758,7 +759,7 @@ export default function Home() {
                       </div>
                       <button
                         onClick={() => setShowProject5(true)}
-                        className="w-fit font-mono text-[10px] tracking-widest uppercase border border-stone-300 text-stone-500 px-4 py-2 rounded-sm hover:border-stone-600 hover:text-stone-700 transition-all cursor-pointer"
+                        className="w-fit font-mono text-[11px] tracking-widest uppercase border border-stone-300 text-stone-500 px-4 py-2 rounded-sm hover:border-stone-600 hover:text-stone-700 transition-all cursor-pointer"
                       >
                         Ver telemetría →
                       </button>
@@ -773,7 +774,7 @@ export default function Home() {
                       </div>
                       <button
                         onClick={() => setShowProject5(false)}
-                        className="mt-6 w-fit font-mono text-[10px] tracking-widest uppercase border border-stone-300 text-stone-500 px-4 py-2 rounded-sm hover:border-stone-600 hover:text-stone-700 transition-all cursor-pointer"
+                        className="mt-6 w-fit font-mono text-[11px] tracking-widest uppercase border border-stone-300 text-stone-500 px-4 py-2 rounded-sm hover:border-stone-600 hover:text-stone-700 transition-all cursor-pointer"
                       >
                         ← Volver
                       </button>
@@ -783,7 +784,7 @@ export default function Home() {
                 {/* Placeholder */}
                 {/*
                 <div className="bg-[#eceae4] p-10 min-h-[340px] flex flex-col justify-end opacity-35 border border-dashed border-stone-300">
-                  <span className="font-mono text-[9px] tracking-[0.2em] uppercase text-stone-400 block mb-3">Próximamente</span>
+                  <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-stone-400 block mb-3">Próximamente</span>
                   <h3 className="font-serif text-[1.8rem] font-light text-stone-400">Nuevo proyecto</h3>
                 </div>
                 */}
@@ -800,7 +801,7 @@ export default function Home() {
             {/* Formulario de contacto */}
             <Reveal>
               <div>
-                <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#c8502a] block mb-4">
+                <p className="font-mono text-[11px] tracking-[0.2em] uppercase text-[#c8502a] block mb-4">
                   05 — Contacto
                 </p>
                 <h2 className="font-serif font-light text-[clamp(2.5rem,5vw,4.5rem)] leading-none text-[#f2f0eb] mb-7">
@@ -820,16 +821,16 @@ export default function Home() {
                 ) : (
                   <div style={{ animation: "fadeUp 0.3s ease" }}>
                     <div className="border-t border-white/10 pt-6 mb-6">
-                      <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-[#c8502a] mb-2.5">Email</p>
+                      <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#c8502a] mb-2.5">Email</p>
                       <p className="text-[16px] text-[#f2f0eb] select-all font-normal">e_schettino@icloud.com</p>
                     </div>
                     <div className="border-t border-white/10 pt-6 mb-8">
-                      <p className="font-mono text-[9px] tracking-[0.2em] uppercase text-[#c8502a] mb-2.5">Teléfono</p>
+                      <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-[#c8502a] mb-2.5">Teléfono</p>
                       <p className="text-[16px] text-[#f2f0eb] select-all font-normal">+56 9 8889 5490</p>
                     </div>
                     <button
                       onClick={() => setShowContact(false)}
-                      className="font-mono text-[9px] tracking-[0.2em] uppercase text-stone-600 hover:text-stone-400 transition-colors cursor-pointer bg-transparent border-none"
+                      className="font-mono text-[10px] tracking-[0.2em] uppercase text-stone-600 hover:text-stone-400 transition-colors cursor-pointer bg-transparent border-none"
                     >
                       Ocultar
                     </button>
@@ -841,7 +842,7 @@ export default function Home() {
             {/* Links */}
             <Reveal delay={150}>
               <div>
-                <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-stone-600 block mb-10">
+                <p className="font-mono text-[11px] tracking-[0.2em] uppercase text-stone-600 block mb-10">
                   Recursos
                 </p>
                 <div>
@@ -874,10 +875,10 @@ export default function Home() {
         {/* ══════════════ FOOTER ══════════════ */}
         <footer className="bg-stone-900 border-t border-white/5 py-5 px-5 lg:px-16">
           <div className="max-w-7xl mx-auto flex justify-between items-center">
-            <span className="font-mono text-[10px] tracking-widest text-stone-100">
+            <span className="font-mono text-[11px] tracking-widest text-stone-100">
               © {new Date().getFullYear()} Eduardo Schettino
             </span>
-            <span className="font-mono text-[10px] tracking-widest text-stone-100">
+            <span className="font-mono text-[11px] tracking-widest text-stone-100">
               Santiago, Chile
             </span>
           </div>
