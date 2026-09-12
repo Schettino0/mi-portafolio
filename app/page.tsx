@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 export default function Home() {
   return (
     <>
@@ -14,19 +12,25 @@ export default function Home() {
 
       <div className="min-h-screen flex items-center justify-center px-6 text-center" style={{ background: "#111110", color: "#f2f0eb" }}>
         <div className="max-w-lg">
-          <div
-            className="relative w-[150px] aspect-[3/4] mx-auto mb-8 overflow-hidden"
-            style={{ border: "1px solid #3c3835" }}
+          <svg
+            viewBox="0 0 200 110"
+            width="180"
+            height="99"
+            fill="none"
+            className="mx-auto mb-8"
+            role="img"
+            aria-label="Barrera de construcción"
           >
-            <Image
-              src="/construccion-dog.jpg"
-              alt="Obrero muy concentrado trabajando en el sitio"
-              fill
-              sizes="150px"
-              className="object-cover"
-              priority
-            />
-          </div>
+            <defs>
+              <pattern id="stripes" width="14" height="14" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+                <rect width="7" height="14" fill="#c8502a" />
+                <rect x="7" width="7" height="14" fill="#f2f0eb" />
+              </pattern>
+            </defs>
+            <path d="M40,18 L14,96 M40,18 L66,96" stroke="#78716c" strokeWidth="3" strokeLinecap="round" />
+            <path d="M160,18 L134,96 M160,18 L186,96" stroke="#78716c" strokeWidth="3" strokeLinecap="round" />
+            <rect x="8" y="34" width="184" height="28" rx="2" fill="url(#stripes)" stroke="#111110" strokeWidth="2" />
+          </svg>
 
           <p className="font-mono text-[11px] tracking-[0.3em] uppercase mb-6" style={{ color: "#78716c" }}>
             Eduardo Schettino
