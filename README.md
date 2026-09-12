@@ -63,3 +63,13 @@ Verificado con `npm run lint` y `npm run build` sin errores.
 ### v2.1 — Modo oscuro por defecto
 
 El sitio ahora carga con el tema oscuro activo en la primera visita (antes iniciaba en claro). El toggle de tema sigue disponible para cambiar a modo claro en cualquier momento.
+
+### v2.2 — SEO básico
+
+- Metadata completa en `layout.tsx`: título con template, descripción, keywords, `metadataBase`, canonical y `theme-color`.
+- Open Graph y Twitter Card (`summary_large_image`) para que los links compartidos muestren una tarjeta con imagen.
+- Imagen social (`app/opengraph-image.tsx`) generada automáticamente con `next/og`, con la identidad visual del sitio — no requiere un archivo de imagen manual.
+- `app/robots.ts` y `app/sitemap.ts` para generar `robots.txt` y `sitemap.xml` automáticamente.
+- Datos estructurados JSON-LD (`schema.org/Person`) en el `<head>` para que buscadores identifiquen el sitio como el perfil profesional de una persona.
+
+La URL usada en metadata (`https://eduardo-schettino.netlify.app`, vía `NEXT_PUBLIC_SITE_URL`) es un placeholder — se debe actualizar con la URL real una vez desplegado en Netlify (o el dominio propio).
