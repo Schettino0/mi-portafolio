@@ -59,3 +59,7 @@ Primera versión funcional del portafolio: perfil, experiencia, formación, stac
 - Eliminados `app/antiguo.tsx` y `app/Antiguo2`, versiones descartadas sin referencias en el proyecto.
 
 Verificado con `npm run lint` y `npm run build` sin errores.
+
+### v2.1 — Modo oscuro por defecto
+
+El sitio ahora carga con el tema oscuro activo en la primera visita (antes iniciaba en claro). El toggle de tema sigue disponible para cambiar a modo claro en cualquier momento.

@@ -200,7 +200,7 @@ const ROLES = [
 
 // ── Página principal ──────────────────────────────────────────────────────
 export default function Home() {
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const [showEasterEgg, setShowEasterEgg] = useState(false);
   const [showContact, setShowContact] = useState(false);
   const [showProject1, setShowProject1] = useState(false);
