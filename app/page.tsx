@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function Home() {
   return (
     <>
@@ -12,6 +14,20 @@ export default function Home() {
 
       <div className="min-h-screen flex items-center justify-center px-6 text-center" style={{ background: "#111110", color: "#f2f0eb" }}>
         <div className="max-w-lg">
+          <div
+            className="relative w-[150px] aspect-[3/4] mx-auto mb-8 overflow-hidden"
+            style={{ border: "1px solid #3c3835" }}
+          >
+            <Image
+              src="/construccion-dog.jpg"
+              alt="Obrero muy concentrado trabajando en el sitio"
+              fill
+              sizes="150px"
+              className="object-cover"
+              priority
+            />
+          </div>
+
           <p className="font-mono text-[11px] tracking-[0.3em] uppercase mb-6" style={{ color: "#78716c" }}>
             Eduardo Schettino
           </p>
