@@ -1,25 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Cormorant_Garamond, Geist_Mono, Outfit } from "next/font/google";
 import "./globals.css";
-
-const cormorant = Cormorant_Garamond({
-  variable: "--font-serif",
-  subsets: ["latin"],
-  weight: ["300", "400"],
-  style: ["normal", "italic"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-  weight: ["300", "400", "500"],
-});
-
-const outfit = Outfit({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
-});
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://eduardo-schettino.netlify.app";
 const TITLE = "Eduardo Schettino — Ingeniero de Automatización y Software";
@@ -113,11 +93,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
         />
       </head>
-      <body
-        className={`${cormorant.variable} ${geistMono.variable} ${outfit.variable} antialiased`}
-      >
-        {children}
-      </body>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }

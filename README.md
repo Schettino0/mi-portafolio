@@ -73,3 +73,15 @@ El sitio ahora carga con el tema oscuro activo en la primera visita (antes inici
 - Datos estructurados JSON-LD (`schema.org/Person`) en el `<head>` para que buscadores identifiquen el sitio como el perfil profesional de una persona.
 
 La URL usada en metadata (`https://eduardo-schettino.netlify.app`, vía `NEXT_PUBLIC_SITE_URL`) es un placeholder — se debe actualizar con la URL real una vez desplegado en Netlify (o el dominio propio).
+
+### v3 — Rediseño editorial (actual)
+
+Rediseño completo del sitio, reestructurado desde cero:
+
+- **Layout**: barra lateral fija con navegación vertical (en vez de menú horizontal), contenido en columna única tipo "dossier" editorial.
+- **Tipografía**: títulos serif a gran escala (`clamp` hasta 154px), etiquetas mono en mayúscula para metadatos.
+- **Selector de paletas**: 5 temas intercambiables en vivo (Editorial, Midnight, Stark, Tesseract, Wakanda) mediante `data-theme` y variables CSS — **Stark** (rojo + oro) queda como paleta principal por defecto.
+- **Secciones**: hero con foto de perfil, experiencia con logos de empresa, formación con barra de idiomas y certificación AVEVA, proyectos como filas expandibles (acordeón), y contacto con revelado de datos.
+- Todo el contenido profesional (experiencia, formación, proyectos, contacto) se mantiene igual que en v2; solo cambia la presentación visual.
+
+Verificado con `npm run lint` y `npm run build` sin errores.
