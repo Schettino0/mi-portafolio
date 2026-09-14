@@ -144,6 +144,10 @@ button {
     gap: 8px;
 }
 
+.rail-clock {
+    color: var(--muted);
+}
+
 .signal-dot {
     display: inline-block;
     width: 7px;
@@ -157,30 +161,24 @@ button {
     margin-left: 96px;
 }
 
-.topbar {
-    height: 68px;
-    padding: 0 clamp(25px, 5vw, 80px);
-    border-bottom: 1px solid var(--line);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: var(--muted);
-    font: 10px var(--font-mono), monospace;
-    letter-spacing: .09em;
-    text-transform: uppercase;
-}
-
-.topbar-mark {
-    color: #e26a50;
-    margin-left: 12px;
-}
-
 .section-pad {
+    position: relative;
+    overflow: hidden;
     padding: 110px clamp(25px, 7vw, 120px);
 }
 
+.section-index {
+    position: absolute;
+    z-index: 0;
+    top: -0.06em;
+    right: 3%;
+    color: color-mix(in srgb, currentColor 10%, transparent);
+    font: 400 clamp(120px, 16vw, 240px)/.8 var(--font-serif), Georgia, serif;
+    pointer-events: none;
+}
+
 .hero {
-    min-height: calc(100vh - 68px);
+    min-height: 100vh;
     display: grid;
     grid-template-columns: 1.15fr .85fr;
     gap: clamp(40px, 8vw, 130px);
@@ -801,7 +799,8 @@ button {
         font-size: clamp(70px, 20vw, 120px);
     }
 
-    .hero-index {
+    .hero-index,
+    .section-index {
         display: none;
     }
 
@@ -847,13 +846,5 @@ button {
 
     .contact footer {
         margin-top: 60px;
-    }
-
-    .topbar {
-        padding: 0 25px;
-    }
-
-    .topbar p:first-child {
-        display: none;
     }
 }
