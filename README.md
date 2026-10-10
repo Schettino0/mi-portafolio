@@ -74,7 +74,7 @@ El sitio ahora carga con el tema oscuro activo en la primera visita (antes inici
 
 La URL usada en metadata (`https://eduardo-schettino.netlify.app`, vía `NEXT_PUBLIC_SITE_URL`) es un placeholder — se debe actualizar con la URL real una vez desplegado en Netlify (o el dominio propio).
 
-### v3 — Rediseño editorial (actual)
+### v3 — Rediseño editorial
 
 Rediseño completo del sitio, reestructurado desde cero:
 
@@ -83,5 +83,18 @@ Rediseño completo del sitio, reestructurado desde cero:
 - **Selector de paletas**: 5 temas intercambiables en vivo (Editorial, Midnight, Stark, Tesseract, Wakanda) mediante `data-theme` y variables CSS — **Stark** (rojo + oro) queda como paleta principal por defecto.
 - **Secciones**: hero con foto de perfil, experiencia con logos de empresa, formación con barra de idiomas y certificación AVEVA, proyectos como filas expandibles (acordeón), y contacto con revelado de datos.
 - Todo el contenido profesional (experiencia, formación, proyectos, contacto) se mantiene igual que en v2; solo cambia la presentación visual.
+
+Verificado con `npm run lint` y `npm run build` sin errores.
+
+### v4 — Menú horizontal, tarjetas y versión móvil (actual)
+
+Nuevo rediseño del layout para aprovechar mejor el espacio y mejorar la legibilidad:
+
+- **Navegación**: menú horizontal fijo arriba (con fecha y hora en vivo) en lugar de la barra lateral vertical. En móvil pasa a un botón hamburguesa con lista a pantalla completa.
+- **Tipografía**: texto base de 18px y etiquetas de mínimo 13px (antes 9–10px).
+- **Layout en tarjetas**: experiencia en 2 tarjetas, formación en 3 columnas sobre fondo oscuro, proyectos en cuadrícula con detalle desplegable, y franja con las tecnologías principales.
+- **Foto**: circular y más pequeña, con anillo del color de acento de la paleta.
+- **Paletas**: se mantienen las 5 (Stark por defecto) y se corrigió el contraste de la sección de contacto en Tesseract y Wakanda.
+- **Móvil**: hero compacto (foto junto al estado), botones a todo el ancho, franja de tecnologías deslizable y botón de paleta redondo.
 
 Verificado con `npm run lint` y `npm run build` sin errores.
