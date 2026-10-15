@@ -1,12 +1,10 @@
-import { getStore } from "@netlify/blobs";
 import { createHash, timingSafeEqual } from "node:crypto";
+import { borrarFirma, listarFirmas } from "../almacen";
 
 // Lista privada de confirmados para /invitacion/lista.
 // Requiere la variable de entorno INVITACION_CLAVE configurada en Netlify.
 
 export const dynamic = "force-dynamic";
-
-type Firma = { nombre: string; fecha: string };
 
 function claveValida(clave: unknown): boolean {
   const real = process.env.INVITACION_CLAVE;
@@ -36,23 +34,10 @@ export async function POST(req: Request) {
     return Response.json({ ok: false, error: "Clave incorrecta" }, { status: 401 });
   }
 
-  const store = getStore({ name: "pacto-halloween", consistency: "strong" });
-
   if (typeof body.borrar === "string" && body.borrar) {
-    await store.delete(body.borrar);
+    await borrarFirma(body.borrar);
   }
 
-  const { blobs } = await store.list();
-  const firmas = await Promise.all(
-    blobs.map(async ({ key }) => {
-      const f = (await store.get(key, { type: "json" })) as Firma | null;
-      return f ? { id: key, ...f } : null;
-    }),
-  );
-
-  const lista = firmas
-    .filter((f): f is Firma & { id: string } => f !== null)
-    .sort((a, b) => a.fecha.localeCompare(b.fecha));
-
+  const lista = await listarFirmas();
   return Response.json({ ok: true, firmas: lista });
 }

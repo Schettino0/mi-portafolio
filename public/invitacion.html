@@ -814,22 +814,33 @@ h1 em { font-style: normal; color: var(--pumpkin); display: block; }
     buzz([80, 60, 200]);
   }
 
-  // Voz con el nombre del invitado (generada en el servidor con ElevenLabs)
-  function playVoice(b64) {
-    if (!b64 || Snd.muted) return;
-    try {
-      const v = new Audio('data:audio/mpeg;base64,' + b64);
-      v.volume = 1;
-      if (Snd.ensure()) {
-        const t = Snd.ctx.currentTime;
-        Snd.master.gain.cancelScheduledValues(t);
-        Snd.master.gain.setTargetAtTime(0.2, t, 0.2);
-      }
-      const restore = () => { if (Snd.ctx && !Snd.muted) Snd.master.gain.setTargetAtTime(0.9, Snd.ctx.currentTime, 0.6); };
-      v.addEventListener('ended', restore);
-      v.addEventListener('error', restore);
-      v.play().catch(restore);
-    } catch (e) {}
+  // Voz con el nombre del invitado (generada en el servidor con ElevenLabs).
+  // Se pide apenas se guarda la firma y se reproduce por Web Audio (ya desbloqueado
+  // por los toques a la puerta), así el celular no la bloquea.
+  function fetchVoice(permiso) {
+    if (!permiso) return Promise.resolve(null);
+    return fetch('/api/pacto/voz', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ permiso: permiso })
+    }).then(async r => {
+      if (!r.ok) { const d = await r.json().catch(() => ({})); console.warn('Voz del pacto:', r.status, d); return null; }
+      return r.arrayBuffer();
+    }).catch(e => { console.warn('Voz del pacto: error de red', e); return null; });
+  }
+
+  function playVoice(buf) {
+    if (!buf || Snd.muted || !Snd.ensure()) return;
+    const ctx = Snd.ctx;
+    ctx.decodeAudioData(buf.slice(0)).then(audio => {
+      const src = ctx.createBufferSource(); src.buffer = audio;
+      const g = ctx.createGain(); g.gain.value = 1.1;
+      src.connect(g).connect(ctx.destination);
+      const t = ctx.currentTime;
+      Snd.master.gain.cancelScheduledValues(t);
+      Snd.master.gain.setTargetAtTime(0.2, t, 0.2);
+      src.onended = () => { if (!Snd.muted) Snd.master.gain.setTargetAtTime(0.9, ctx.currentTime, 0.6); };
+      src.start();
+    }).catch(e => console.warn('Voz del pacto: no se pudo decodificar', e));
   }
 
   /* ================= Confeti naranja y negro ================= */
@@ -1021,9 +1032,10 @@ h1 em { font-style: normal; color: var(--pumpkin); display: block; }
       body: JSON.stringify({ nombre: name, bot: bot })
     }).then(r => r.json().then(d => { if (!r.ok || !d.ok) throw new Error(r.status); return d; }));
     const anim = new Promise(res => setTimeout(res, 1500));
+    const voice = sent.then(d => fetchVoice(d && d.voz)).catch(() => null);
     Promise.all([sent, anim]).then(([data]) => {
       thunder();
-      playVoice(data && data.audio);
+      voice.then(buf => setTimeout(() => playVoice(buf), 250));
       store('pactName', name);
       signBtn.hidden = true;
       soul.textContent = 'Tu alma ya es nuestra, ' + name + '.';
