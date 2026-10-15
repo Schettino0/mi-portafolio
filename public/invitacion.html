@@ -771,7 +771,37 @@ h1 em { font-style: normal; color: var(--pumpkin); display: block; }
     }
   };
   Snd.btn.addEventListener('click', () => Snd.toggle());
-  function knockSound() { Snd.knock(); Snd.startIntro(); }
+  // Audio propio para el primer toque a la puerta
+  const tocToc = new Audio('/invitacion-audio/toctoc.mp3');
+  tocToc.preload = 'auto';
+  let primerToque = true;
+  function knockSound() {
+    if (primerToque) {
+      primerToque = false;
+      if (!Snd.muted) { try { tocToc.currentTime = 0; tocToc.play().catch(() => Snd.knock()); } catch (e) { Snd.knock(); } }
+    } else {
+      Snd.knock();
+    }
+    Snd.startIntro();
+  }
+
+  // Voz con el nombre del invitado (generada en el servidor con ElevenLabs)
+  function playVoice(b64) {
+    if (!b64 || Snd.muted) return;
+    try {
+      const v = new Audio('data:audio/mpeg;base64,' + b64);
+      v.volume = 1;
+      if (Snd.ensure()) {
+        const t = Snd.ctx.currentTime;
+        Snd.master.gain.cancelScheduledValues(t);
+        Snd.master.gain.setTargetAtTime(0.2, t, 0.2);
+      }
+      const restore = () => { if (Snd.ctx && !Snd.muted) Snd.master.gain.setTargetAtTime(0.9, Snd.ctx.currentTime, 0.6); };
+      v.addEventListener('ended', restore);
+      v.addEventListener('error', restore);
+      v.play().catch(restore);
+    } catch (e) {}
+  }
 
   /* ================= Confeti naranja y negro ================= */
   function confetti(cx, cy) {
@@ -863,6 +893,7 @@ h1 em { font-style: normal; color: var(--pumpkin); display: block; }
 
   document.getElementById('again').addEventListener('click', () => {
     opened = false; knocks = 0;
+    primerToque = true;
     Snd.stopTheme();
     if (!Snd.muted) Snd.startIntro();
     dots.forEach(d => d.classList.remove('on'));
@@ -913,7 +944,7 @@ h1 em { font-style: normal; color: var(--pumpkin); display: block; }
   function resetPact() {
     pactName.readOnly = false; pactName.value = load('pactName');
     sig.textContent = ''; sig.classList.remove('write');
-    pactErr.textContent = ''; signBtn.disabled = false; signBtn.hidden = false;
+    pactErr.textContent = ''; signBtn.disabled = false; signBtn.hidden = false; signBtn.textContent = 'Firmar con sangre';
     pactDone.hidden = true; drips.innerHTML = '';
   }
 
@@ -939,6 +970,7 @@ h1 em { font-style: normal; color: var(--pumpkin); display: block; }
     pactErr.textContent = '';
     pactName.readOnly = true; pactName.blur();
     signBtn.disabled = true;
+    signBtn.textContent = 'Sellando el pacto…';
     sig.textContent = name;
     sig.classList.add('write');
     signSound();
@@ -958,9 +990,10 @@ h1 em { font-style: normal; color: var(--pumpkin); display: block; }
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ nombre: name, bot: bot })
-    }).then(r => { if (!r.ok) throw new Error(r.status); });
+    }).then(r => r.json().then(d => { if (!r.ok || !d.ok) throw new Error(r.status); return d; }));
     const anim = new Promise(res => setTimeout(res, 1500));
-    Promise.all([sent, anim]).then(() => {
+    Promise.all([sent, anim]).then(([data]) => {
+      playVoice(data && data.audio);
       store('pactName', name);
       signBtn.hidden = true;
       soul.textContent = 'Tu alma ya es nuestra, ' + name + '.';
@@ -970,7 +1003,7 @@ h1 em { font-style: normal; color: var(--pumpkin); display: block; }
     }).catch(() => {
       anim.then(() => {
         sig.textContent = ''; sig.classList.remove('write'); drips.innerHTML = '';
-        pactName.readOnly = false; signBtn.disabled = false;
+        pactName.readOnly = false; signBtn.disabled = false; signBtn.textContent = 'Firmar con sangre';
         pactErr.textContent = 'No se pudo guardar tu firma. Revisa tu conexión e intenta otra vez.';
       });
     });
