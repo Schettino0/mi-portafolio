@@ -552,8 +552,7 @@ h1 em { font-style: normal; color: var(--pumpkin); display: block; }
     <button class="pact-close" id="pactClose" type="button" aria-label="Cerrar">×</button>
     <div class="candle" aria-hidden="true"><div class="flame"></div><div class="wax"></div></div>
     <h2 id="pactTitle">Pacto de sangre</h2>
-    <form id="pactForm" name="pacto" method="POST" novalidate>
-      <input type="hidden" name="form-name" value="pacto">
+    <form id="pactForm" novalidate>
       <p hidden><label>No llenar: <input name="bot-field"></label></p>
       <p class="oath">
         Yo,
@@ -954,10 +953,11 @@ h1 em { font-style: normal; color: var(--pumpkin); display: block; }
       d.style.width = (5 + Math.random() * 6) + 'px';
       drips.appendChild(d);
     }
-    const sent = fetch('/__forms.html', {
+    const bot = (pactForm.querySelector('[name="bot-field"]') || {}).value || '';
+    const sent = fetch('/api/pacto', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ 'form-name': 'pacto', 'nombre': name, 'bot-field': '' }).toString()
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre: name, bot: bot })
     }).then(r => { if (!r.ok) throw new Error(r.status); });
     const anim = new Promise(res => setTimeout(res, 1500));
     Promise.all([sent, anim]).then(() => {

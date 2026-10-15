@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Almas confirmadas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Courier+Prime:wght@400;700&display=swap">
+<style>
+/* Lista privada de confirmados del carrete de Halloween. Mismo mundo visual que /invitacion. */
+:root {
+  --night: #110a13; --night-2: #1d1220; --bone: #efe4cc; --bone-dim: #a8998a;
+  --pumpkin: #ff7a1a; --blood: #a3202a; --line: rgba(239,228,204,.14);
+  --display: "Pirata One", Georgia, serif; --mono: "Courier Prime", "Courier New", monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body {
+  margin: 0; background: var(--night); color: var(--bone); font-family: var(--mono); font-size: 16px;
+  background-image: radial-gradient(ellipse at 50% -10%, rgba(120,40,90,.35), transparent 60%);
+  background-attachment: fixed;
+}
+[hidden] { display: none !important; }
+.wrap {
+  max-width: 560px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: calc(32px + env(safe-area-inset-top, 0px)) calc(40px + env(safe-area-inset-bottom, 0px));
+  display: flex; flex-direction: column; gap: 24px;
+}
+.eyebrow { font-size: .75rem; letter-spacing: .28em; text-transform: uppercase; color: var(--pumpkin); margin: 0; }
+h1 { font-family: var(--display); font-weight: 400; font-size: clamp(2.6rem, 12vw, 3.6rem); line-height: .95; margin: 4px 0 0; text-shadow: 0 2px 0 var(--blood); }
+.card { background: var(--night-2); border: 1px solid var(--line); border-radius: 4px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+label { font-size: .8rem; letter-spacing: .18em; text-transform: uppercase; color: var(--bone-dim); }
+input {
+  font: inherit; font-size: 1.1rem; color: var(--bone); background: var(--night);
+  border: 1.5px solid var(--line); border-radius: 4px; padding: 12px 14px; width: 100%;
+}
+input:focus { outline: none; border-color: var(--pumpkin); }
+.btn {
+  font: inherit; font-weight: 700; font-size: .9rem; cursor: pointer; border-radius: 4px; padding: 11px 14px;
+  border: 1.5px solid var(--bone); background: transparent; color: var(--bone);
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+}
+.btn.primary { background: var(--pumpkin); border-color: var(--pumpkin); color: var(--night); }
+.btn:focus-visible { outline: 2px dashed var(--pumpkin); outline-offset: 3px; }
+.btn:disabled { opacity: .5; cursor: default; }
+.err { color: #ff6b6b; font-size: .9rem; margin: 0; min-height: 1.2em; }
+.count { display: flex; align-items: baseline; gap: 12px; border-block: 1px dashed var(--line); padding-block: 14px; }
+.count b { font-family: var(--display); font-weight: 400; font-size: 4rem; line-height: .8; color: var(--pumpkin); font-variant-numeric: tabular-nums; }
+.count span { color: var(--bone-dim); }
+.tools { display: flex; flex-wrap: wrap; gap: 8px; }
+ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+li {
+  display: grid; grid-template-columns: 2.2em 1fr auto; gap: 10px; align-items: center;
+  padding: 12px 4px; border-bottom: 1px solid var(--line);
+}
+li .n { color: var(--bone-dim); font-variant-numeric: tabular-nums; }
+li .who { min-width: 0; }
+li .name { font-family: var(--display); font-size: 1.6rem; line-height: 1.05; overflow-wrap: anywhere; }
+li .when { font-size: .8rem; color: var(--bone-dim); }
+.del { background: none; border: 1px solid transparent; color: var(--bone-dim); font: inherit; font-size: .8rem; padding: 6px 8px; border-radius: 4px; cursor: pointer; }
+.del.armed { border-color: var(--blood); color: #ff6b6b; }
+.empty { color: var(--bone-dim); text-align: center; padding: 28px 8px; border: 1px dashed var(--line); border-radius: 4px; line-height: 1.5; }
+.foot { display: flex; justify-content: space-between; gap: 12px; font-size: .8rem; color: var(--bone-dim); flex-wrap: wrap; }
+.foot a { color: var(--bone-dim); }
+.linkbtn { background: none; border: none; color: var(--bone-dim); font: inherit; text-decoration: underline; cursor: pointer; padding: 0; }
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translate(-50%, 16px); background: var(--bone); color: var(--night); font-weight: 700; font-size: .85rem; padding: 10px 16px; border-radius: 4px; opacity: 0; transition: .25s; pointer-events: none; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <p class="eyebrow">Carrete de Halloween · Solo para el anfitrión</p>
+    <h1>Almas confirmadas</h1>
+  </header>
+
+  <form class="card" id="login">
+    <label for="clave">Clave</label>
+    <input id="clave" name="clave" type="password" autocomplete="current-password" required>
+    <p class="err" id="loginErr" role="alert"></p>
+    <button class="btn primary" type="submit" id="loginBtn">Ver la lista</button>
+  </form>
+
+  <section id="panel" hidden>
+    <div class="count"><b id="total">0</b><span id="totalLabel">almas firmaron el pacto</span></div>
+    <div class="tools" style="margin-top:14px">
+      <button class="btn" type="button" id="refresh">Actualizar</button>
+      <button class="btn" type="button" id="copy">Copiar nombres</button>
+      <button class="btn" type="button" id="csv">Descargar CSV</button>
+    </div>
+    <ol id="list" style="margin-top:14px"></ol>
+    <p class="empty" id="empty" hidden>Todavía nadie firma el pacto.<br>Cuando alguien confirme en /invitacion, aparecerá aquí.</p>
+    <p class="err" id="panelErr" role="alert" style="margin-top:10px"></p>
+  </section>
+
+  <footer class="foot">
+    <a href="/invitacion">Ver la invitación</a>
+    <button class="linkbtn" type="button" id="logout" hidden>Cerrar sesión</button>
+  </footer>
+</main>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  let clave = '';
+  let firmas = [];
+  try { clave = sessionStorage.getItem('clavePacto') || ''; } catch (e) {}
+
+  const fmt = new Intl.DateTimeFormat('es-CL', { timeZone: 'America/Santiago', weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+  function say(msg) { const t = $('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 1800); }
+
+  async function pedir(extra) {
+    const r = await fetch('/api/pacto/lista', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(Object.assign({ clave: clave }, extra || {}))
+    });
+    const data = await r.json().catch(() => ({ ok: false, error: 'Respuesta inválida del servidor' }));
+    if (!r.ok || !data.ok) { const e = new Error(data.error || ('Error ' + r.status)); e.status = r.status; throw e; }
+    return data.firmas;
+  }
+
+  function render() {
+    $('total').textContent = firmas.length;
+    $('totalLabel').textContent = firmas.length === 1 ? 'alma firmó el pacto' : 'almas firmaron el pacto';
+    const ol = $('list'); ol.innerHTML = '';
+    firmas.forEach((f, i) => {
+      const li = document.createElement('li');
+      const n = document.createElement('span'); n.className = 'n'; n.textContent = (i + 1) + '.';
+      const who = document.createElement('div'); who.className = 'who';
+      const nm = document.createElement('div'); nm.className = 'name'; nm.textContent = f.nombre;
+      const wh = document.createElement('div'); wh.className = 'when'; wh.textContent = fmt.format(new Date(f.fecha));
+      who.append(nm, wh);
+      const del = document.createElement('button'); del.type = 'button'; del.className = 'del'; del.textContent = 'Borrar';
+      del.setAttribute('aria-label', 'Borrar a ' + f.nombre);
+      del.addEventListener('click', () => borrar(f, del));
+      li.append(n, who, del); ol.appendChild(li);
+    });
+    $('empty').hidden = firmas.length > 0;
+    $('copy').disabled = $('csv').disabled = firmas.length === 0;
+  }
+
+  async function cargar() {
+    $('panelErr').textContent = '';
+    $('refresh').disabled = true;
+    try { firmas = await pedir(); render(); }
+    catch (e) { manejar(e, 'panelErr'); }
+    finally { $('refresh').disabled = false; }
+  }
+
+  function manejar(e, where) {
+    if (e.status === 401) { salir(); $('loginErr').textContent = 'Clave incorrecta.'; return; }
+    $(where).textContent = e.message;
+  }
+
+  async function borrar(f, btn) {
+    if (!btn.classList.contains('armed')) {
+      btn.classList.add('armed'); btn.textContent = '¿Seguro?';
+      setTimeout(() => { btn.classList.remove('armed'); btn.textContent = 'Borrar'; }, 3000);
+      return;
+    }
+    btn.disabled = true;
+    try { firmas = await pedir({ borrar: f.id }); render(); say(f.nombre + ' fue borrado'); }
+    catch (e) { manejar(e, 'panelErr'); btn.disabled = false; }
+  }
+
+  function entrar() {
+    $('login').hidden = true; $('panel').hidden = false; $('logout').hidden = false;
+    cargar();
+  }
+  function salir() {
+    clave = ''; try { sessionStorage.removeItem('clavePacto'); } catch (e) {}
+    $('panel').hidden = true; $('logout').hidden = true; $('login').hidden = false; $('clave').value = '';
+  }
+
+  $('login').addEventListener('submit', async e => {
+    e.preventDefault();
+    clave = $('clave').value;
+    $('loginErr').textContent = ''; $('loginBtn').disabled = true;
+    try {
+      firmas = await pedir();
+      try { sessionStorage.setItem('clavePacto', clave); } catch (err) {}
+      $('login').hidden = true; $('panel').hidden = false; $('logout').hidden = false; render();
+    } catch (err) {
+      $('loginErr').textContent = err.status === 401 ? 'Clave incorrecta.' : err.message;
+    } finally { $('loginBtn').disabled = false; }
+  });
+
+  $('refresh').addEventListener('click', cargar);
+  $('logout').addEventListener('click', salir);
+
+  $('copy').addEventListener('click', () => {
+    const txt = firmas.map((f, i) => (i + 1) + '. ' + f.nombre).join('\n');
+    (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject())
+      .then(() => say('Lista copiada'), () => say('No se pudo copiar'));
+  });
+
+  $('csv').addEventListener('click', () => {
+    const esc = v => '"' + String(v).replace(/"/g, '""') + '"';
+    const rows = [['nombre', 'fecha_firma']].concat(firmas.map(f => [f.nombre, fmt.format(new Date(f.fecha))]));
+    const csv = '﻿' + rows.map(r => r.map(esc).join(',')).join('\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    const a = document.createElement('a'); a.href = url; a.download = 'confirmados-halloween.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+
+  if (clave) entrar();
+})();
+</script>
+</body>
+</html>
