@@ -21,9 +21,9 @@ function limpiar(nombre: unknown): string {
 
 // Frases con audio tags de Eleven v4. {n} se reemplaza por el nombre.
 const FRASES = [
-  "[whispers, slowly] {n}… [long pause] [low threatening] tu alma… ya es nuestra. [laughs] [barely audible] …para siempre.",
-  "[barely audible] {n}… [long pause] [hushed, drawn out] firmaste con sangre… [pause] [low threatening] y la sangre no se borra. [laughs]",
-  "[low threatening, slowly] Bienvenido a la familia, {n}. [long pause] [whispers] Ya no hay vuelta atrás… [laughs]",
+  "[low threatening, booming, slowly] Muajajajaja… [laughs] ¡MUAJAJAJAJAJA! [long pause] [whispers] {n}… [pause] [low threatening] tu alma… ya es nuestra. [barely audible] …para siempre.",
+  "[booming, drawn out] Muuuajajajaja… [laughs] [long pause] [hushed] {n}… firmaste con sangre… [pause] [low threatening] y la sangre no se borra.",
+  "[low threatening] Mua… ja… ja… [laughs] ¡MUAJAJAJAJA! [long pause] [whispers, slowly] Bienvenido a la familia, {n}. [pause] Ya no hay vuelta atrás…",
 ];
 
 async function generarVoz(nombre: string): Promise<string | null> {
@@ -32,7 +32,7 @@ async function generarVoz(nombre: string): Promise<string | null> {
   if (!apiKey || !voiceId) return null;
 
   // Reutiliza el audio si ese nombre ya firmó antes (ahorra créditos)
-  const clave = nombre.toLowerCase();
+  const clave = "v2:" + nombre.toLowerCase();
   try {
     const guardado = await voces().get(clave, { type: "arrayBuffer" });
     if (guardado) return Buffer.from(guardado).toString("base64");
